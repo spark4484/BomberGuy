@@ -25,7 +25,7 @@ const CONFIG = {
   startBombs: 1,
   maxBombs: 3,
   slideSpeed: 8,            // kicked bomb speed, tiles / second
-  playerRadius: 0.38,       // collision circle, in tile units
+  playerRadius: 0.35,       // collision circle, in tile units
   tickHz: 60,
   sendHz: 20,
   maxPlayers: 4,
@@ -163,6 +163,24 @@ function tryKick(p, tx, ty, dx, dy) {
   b.dir = { x: dx, y: dy };
 }
 
+// When a move along one axis is blocked, slide the player toward the center of
+// their current lane if the passage ahead is open there (corner assist).
+function alignAssist(p, axis, step, maxNudge) {
+  if (axis === 'x') {
+    const centerY = Math.floor(p.y) + 0.5;
+    const off = centerY - p.y;
+    if (Math.abs(off) < 0.005 || circleBlocked(p, p.x + step, centerY)) return;
+    const nudge = Math.sign(off) * Math.min(Math.abs(off), maxNudge);
+    if (!circleBlocked(p, p.x, p.y + nudge)) p.y += nudge;
+  } else {
+    const centerX = Math.floor(p.x) + 0.5;
+    const off = centerX - p.x;
+    if (Math.abs(off) < 0.005 || circleBlocked(p, centerX, p.y + step)) return;
+    const nudge = Math.sign(off) * Math.min(Math.abs(off), maxNudge);
+    if (!circleBlocked(p, p.x + nudge, p.y)) p.x += nudge;
+  }
+}
+
 function movePlayer(p, dt) {
   const inp = p.input;
   let dx = (inp.right ? 1 : 0) - (inp.left ? 1 : 0);
@@ -184,13 +202,7 @@ function movePlayer(p, dt) {
       p.x += stepX;
     } else {
       tryKick(p, hit.tx, hit.ty, Math.sign(stepX), 0);
-      // corner assist: nudge vertically toward the open gap
-      if (dy === 0) {
-        const off = p.y - (Math.floor(p.y) + 0.5);
-        const nudge = speed * dt * 0.9;
-        if (off > 0.2 && !circleBlocked(p, p.x + stepX, p.y + nudge)) p.y += nudge;
-        else if (off < -0.2 && !circleBlocked(p, p.x + stepX, p.y - nudge)) p.y -= nudge;
-      }
+      if (dy === 0) alignAssist(p, 'x', stepX, speed * dt);
     }
   }
   // Y axis
@@ -200,12 +212,7 @@ function movePlayer(p, dt) {
       p.y += stepY;
     } else {
       tryKick(p, hit.tx, hit.ty, 0, Math.sign(stepY));
-      if (dx === 0) {
-        const off = p.x - (Math.floor(p.x) + 0.5);
-        const nudge = speed * dt * 0.9;
-        if (off > 0.2 && !circleBlocked(p, p.x + nudge, p.y + stepY)) p.x += nudge;
-        else if (off < -0.2 && !circleBlocked(p, p.x - nudge, p.y + stepY)) p.x -= nudge;
-      }
+      if (dx === 0) alignAssist(p, 'y', stepY, speed * dt);
     }
   }
   p.x = Math.max(CONFIG.playerRadius, Math.min(CONFIG.cols - CONFIG.playerRadius, p.x));
