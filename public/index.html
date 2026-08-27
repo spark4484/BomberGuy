@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BomberGuy</title>
+<style>
+  :root { --bg: #1b1d29; --panel: #262a3b; --text: #e8eaf2; --accent: #ffd24d; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px;
+    background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+  }
+  h1 { margin: 0; font-size: 28px; letter-spacing: 2px; color: var(--accent); }
+  h1 span { color: #ff5d5d; }
+  #hud {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    min-height: 58px; width: 624px; max-width: 95vw;
+  }
+  .hudCard {
+    background: var(--panel); border-radius: 8px; padding: 6px 12px;
+    display: flex; flex-direction: column; gap: 2px; font-size: 13px;
+    border-left: 4px solid transparent; min-width: 130px;
+  }
+  .hudCard .nm { font-weight: 600; }
+  .hudCard .stats { opacity: 0.9; font-size: 12px; }
+  #wrap { position: relative; }
+  canvas {
+    display: block; border-radius: 8px; max-width: 95vw; height: auto;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  }
+  .overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px;
+    background: rgba(20, 22, 34, 0.92); border-radius: 8px; text-align: center;
+  }
+  .overlay.hidden { display: none; }
+  .overlay input {
+    font-size: 18px; padding: 8px 12px; border-radius: 6px; border: none;
+    background: #3a3f57; color: var(--text); text-align: center; width: 220px;
+  }
+  .overlay button {
+    font-size: 18px; padding: 10px 26px; border-radius: 6px; border: none;
+    background: var(--accent); color: #222; font-weight: 700; cursor: pointer;
+  }
+  .overlay button:disabled { opacity: 0.4; cursor: default; }
+  .overlay .roster { font-size: 15px; line-height: 1.7; }
+  #help { font-size: 13px; opacity: 0.65; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>BOMBER<span>GUY</span></h1>
+  <div id="hud"></div>
+  <div id="wrap">
+    <canvas id="game" width="624" height="528"></canvas>
+    <div id="joinOverlay" class="overlay">
+      <div style="font-size:20px">Enter your name</div>
+      <input id="nameInput" maxlength="12" placeholder="Player" autocomplete="off">
+      <button id="joinBtn">Join</button>
+    </div>
+    <div id="lobbyOverlay" class="overlay hidden">
+      <div style="font-size:22px">Lobby</div>
+      <div class="roster" id="roster"></div>
+      <button id="startBtn" disabled>Waiting for players…</button>
+    </div>
+    <div id="overOverlay" class="overlay hidden">
+      <div id="winnerText" style="font-size:26px"></div>
+      <button id="againBtn">Back to lobby</button>
+    </div>
+  </div>
+  <div id="help">Move: WASD / Arrow keys &nbsp;·&nbsp; Bomb: Space &nbsp;·&nbsp;
+    Power-ups: 🔥 radius &nbsp; 💣 extra bomb &nbsp; ⚡ speed &nbsp; 🥾 kick</div>
+  <script src="client.js"></script>
+</body>
+</html>

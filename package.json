@@ -1,0 +1,12 @@
+{
+  "name": "bomberguy",
+  "version": "1.0.0",
+  "description": "Multiplayer Bomberman clone playable online via cloudflared",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
