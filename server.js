@@ -23,7 +23,7 @@ const CONFIG = {
   startRadius: 1,
   maxRadius: 5,
   startBombs: 1,
-  maxBombs: 3,
+  maxBombs: 6,
   slideSpeed: 8,            // kicked bomb speed, tiles / second
   playerRadius: 0.35,       // collision circle, in tile units
   tickHz: 60,
